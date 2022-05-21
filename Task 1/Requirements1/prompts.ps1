@@ -36,7 +36,7 @@ Function Main () {
         $KeyInfo = $Host.UI.RawUI.ReadKey("IncludeKeyDown")
         Write-Debug "KeyPress received: $KeyInfo"
         Write-Host
-        
+
         Switch ($KeyInfo.Character) {
             '1' { AppendLogFiles }
             '2' { WriteFiles }
@@ -50,7 +50,7 @@ Function Main () {
 
         Write-Host
     }
-    until($KeyInfo.Character -Eq '5')
+    until(false)
  }
 
 Main
