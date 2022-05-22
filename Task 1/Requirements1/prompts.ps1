@@ -1,27 +1,45 @@
+# Seymour, Joseph 004521088
+# WGU C916
+
 # Script to automate the onboarding of new employees
 
-# Switch statement to prompt for input
-# Accept inputs from 1 to 5
-
+# Function to append all the log files to the daily log
 Function AppendLogFiles(){
+    $LogFiles = Get-ChildItem *.log
+    $DailyLogFileName = "DailyLog.txt"
+    $CurrentDateTime = Get-Date
+
+    Add-Content $DailyLogFileName "Log for $CurrentDateTime"
+    Add-Content $DailyLogFileName "***************** START *****************"
+    foreach ($LogFileItem in $LogFiles) {
+        Add-Content $DailyLogFileName -Value $LogFileItem.Name
+    }
+    Add-Content $DailyLogFileName "*****************  END  *****************"
+    Add-Content $DailyLogFileNamen ""
+
     Write-Host "Successfully appended all *.log files to DailyLog.txt"
 }
 
+# Function to write all the file names to contents
 Function WriteFiles(){
     Write-Host "Successfully wrote all files to C916contents.txt"
 }
 
+# Function to list memory and cpu usage
 Function ListMemoryAndCpuUsage(){
     Write-Host "Successfully listed memory and cpu usage"
 }
 
+# Function to list all processes by virtual size
 Function ListProcessesByVirtualSize(){
     Write-Host "Successfully listed processes by virtual size"
 }
 
+# Main function
 Function Main () {
     Write-Host "Welcome to the WGU C916 Task 1 Script!"
 
+    # Main do loop for repeating input request
     do {
         Write-Host "*********************************************************"
         Write-Host "Press 1 to append *.log files to DailyLog.txt"
@@ -33,10 +51,12 @@ Function Main () {
         Write-Host
         Write-Host "Please provide your input here [1-5]: "
 
+        # Read the key pressed by user
         $KeyInfo = $Host.UI.RawUI.ReadKey("IncludeKeyDown")
         Write-Debug "KeyPress received: $KeyInfo"
         Write-Host
 
+        # Switch based on the keyinfo character
         Switch ($KeyInfo.Character) {
             '1' { AppendLogFiles }
             '2' { WriteFiles }
@@ -44,13 +64,16 @@ Function Main () {
             '4' { ListProcessesByVirtualSize }
             '5' { Exit 0 }
             default {
+                # Let the user know the input is not recognized
                 Write-Host "Unknown option selected, please try again"
             }
         }
 
         Write-Host
     }
+    # Keep doing this forever
     until(false)
  }
 
+# Call main
 Main
