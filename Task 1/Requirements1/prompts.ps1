@@ -16,7 +16,7 @@ Function AppendLogFiles(){
     Add-Content $DailyLogFileName "Log for $CurrentDateTime"
     # Append start of log
     Add-Content $DailyLogFileName "***************** START *****************"
-    # Get all the files
+    # Loop through all the files
     foreach ($LogFileItem in $LogFiles) {
         # Add the file name to the file
         Add-Content $DailyLogFileName -Value $LogFileItem.Name
@@ -31,7 +31,22 @@ Function AppendLogFiles(){
 
 # Function to write all the file names to contents
 Function WriteFiles(){
-    Write-Host "Successfully wrote all files to C916contents.txt"
+    # Where to write the output to
+    $ContentFile = "C916contents.txt"
+    if (Test-Path $ContentFile) {
+        Remove-Item $ContentFile
+    }
+
+    # Get all of the files from here
+    $LogFiles = Get-ChildItem | Sort-Object
+
+    # Loop through the files
+    foreach ($LogFileItem in $LogFiles) {
+        # Add the file name to the file
+        Add-Content $ContentFile -Value $LogFileItem.Name
+    }
+
+    Write-Debug "Successfully wrote all files to C916contents.txt"
 }
 
 # Function to list memory and cpu usage

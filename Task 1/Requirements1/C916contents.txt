@@ -1,0 +1,5 @@
+DailyLog.txt
+debug.1.log
+debug.log
+log.txt
+prompts.ps1
