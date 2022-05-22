@@ -5,19 +5,28 @@
 
 # Function to append all the log files to the daily log
 Function AppendLogFiles(){
-    $LogFiles = Get-ChildItem *.log
+    # Where to write the output to
     $DailyLogFileName = "DailyLog.txt"
+    # Current date
     $CurrentDateTime = Get-Date
+    # Get all of the files that have the log extension
+    $LogFiles = Get-ChildItem *.log
 
+    # Append start of log
     Add-Content $DailyLogFileName "Log for $CurrentDateTime"
+    # Append start of log
     Add-Content $DailyLogFileName "***************** START *****************"
+    # Get all the files
     foreach ($LogFileItem in $LogFiles) {
+        # Add the file name to the file
         Add-Content $DailyLogFileName -Value $LogFileItem.Name
     }
+    # Append end of log
     Add-Content $DailyLogFileName "*****************  END  *****************"
-    Add-Content $DailyLogFileNamen ""
+    # Append newline for ease of reading
+    Add-Content $DailyLogFileName "`r`n"
 
-    Write-Host "Successfully appended all *.log files to DailyLog.txt"
+    Write-Debug "Successfully appended all *.log files to DailyLog.txt"
 }
 
 # Function to write all the file names to contents
