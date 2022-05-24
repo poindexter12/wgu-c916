@@ -3,6 +3,12 @@
 
 # Script to automate the onboarding of new employees
 
+# Write host with blank lines above and below
+Function WriteHostWithLines($message){
+    Write-Host
+    Write-Host $message
+    Write-Host
+}
 # Function to append all the log files to the daily log
 Function AppendLogFiles(){
     # Where to write the output to
@@ -26,7 +32,7 @@ Function AppendLogFiles(){
     # Append newline for ease of reading
     Add-Content $DailyLogFileName "`r`n"
 
-    Write-Debug "Successfully appended all *.log files to DailyLog.txt"
+    WriteHostWithLines "Successfully appended all *.log files to DailyLog.txt"
 }
 
 # Function to write all the file names to contents
@@ -46,17 +52,27 @@ Function WriteFiles(){
         Add-Content $ContentFile -Value $LogFileItem.Name
     }
 
-    Write-Debug "Successfully wrote all files to C916contents.txt"
+    WriteHostWithLines "Successfully wrote all files to C916contents.txt"
 }
 
 # Function to list memory and cpu usage
 Function ListMemoryAndCpuUsage(){
     Write-Host "Successfully listed memory and cpu usage"
+
+    #$processor = Get-WmiObject win32_processor 
+    $load = Get-CimInstance win32_processor | Measure-Object -Property LoadPercentage -Average
+
+    WriteHostWithLines "CPU usage: $load"
 }
 
 # Function to list all processes by virtual size
 Function ListProcessesByVirtualSize(){
     Write-Host "Successfully listed processes by virtual size"
+    
+    $Processes = Get-Process
+    foreach ($ProcessItem in $Processes) {
+        Write-Host $ProcessItem
+    }
 }
 
 # Main function
@@ -66,27 +82,26 @@ Function Main () {
     # Main do loop for repeating input request
     do {
         Write-Host "*********************************************************"
-        Write-Host "Press 1 to append *.log files to DailyLog.txt"
-        Write-Host "Press 2 to write files to C916contents.txt"
-        Write-Host "Press 3 to write files to list memory and cpu usage"
-        Write-Host "Press 4 to write files to list processes by virtual size"
-        Write-Host "Press 5 to exit!"
+        Write-Host "1 to append *.log files to DailyLog.txt"
+        Write-Host "2 to write files to C916contents.txt"
+        Write-Host "3 to write files to list memory and cpu usage"
+        Write-Host "4 to write files to list processes by virtual size"
+        Write-Host "5 to exit!"
         Write-Host "*********************************************************"
         Write-Host
-        Write-Host "Please provide your input here [1-5]: "
 
         # Read the key pressed by user
-        $KeyInfo = $Host.UI.RawUI.ReadKey("IncludeKeyDown")
+        $response = Read-Host "Please provide your input and press ENTER"
         Write-Debug "KeyPress received: $KeyInfo"
         Write-Host
 
         # Switch based on the keyinfo character
-        Switch ($KeyInfo.Character) {
+        Switch ($response) {
             '1' { AppendLogFiles }
             '2' { WriteFiles }
             '3' { ListMemoryAndCpuUsage }
             '4' { ListProcessesByVirtualSize }
-            '5' { Exit 0 }
+            '5' { Break; }
             default {
                 # Let the user know the input is not recognized
                 Write-Host "Unknown option selected, please try again"
@@ -96,7 +111,7 @@ Function Main () {
         Write-Host
     }
     # Keep doing this forever
-    until(false)
+    until($response -eq "5")
  }
 
 # Call main

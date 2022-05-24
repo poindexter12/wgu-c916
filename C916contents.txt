@@ -1,0 +1,5 @@
+DailyLog.txt
+LICENSE
+README.md
+Task 1
+Task 2
