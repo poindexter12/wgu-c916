@@ -37,18 +37,13 @@ Function AppendLogFiles(){
     $DailyLogFileName = "DailyLog.txt"
     # Current date
     $CurrentDateTime = Get-Date
-    # Get all of the files that have the log extension
-    $LogFiles = Get-ChildItem *.log
 
     # Append start of log
     Add-Content $DailyLogFileName "Log for $CurrentDateTime"
     # Append start of log
     Add-Content $DailyLogFileName "***************** START *****************"
-    # Loop through all the files
-    foreach ($LogFileItem in $LogFiles) {
-        # Add the file name to the file
-        Add-Content $DailyLogFileName -Value $LogFileItem.Name
-    }
+    # Write out to file only *.log, appending to file
+    Get-ChildItem *.log | Out-File $DailyLogFileName -Append
     # Append end of log
     Add-Content $DailyLogFileName "*****************  END  *****************"
     # Append newline for ease of reading
@@ -65,18 +60,9 @@ Function WriteFiles(){
     
     # Where to write the output to
     $ContentFile = "C916contents.txt"
-    if (Test-Path $ContentFile) {
-        Remove-Item $ContentFile
-    }
 
-    # Get all of the files from here
-    $LogFiles = Get-ChildItem | Sort-Object
-
-    # Loop through the files
-    foreach ($LogFileItem in $LogFiles) {
-        # Add the file name to the file
-        Add-Content $ContentFile -Value $LogFileItem.Name
-    }
+    # Write out to file, sorting by filename
+    Get-ChildItem | Sort-Object | Out-File $ContentFile
 
     WriteHostWithLines "Successfully wrote all files to C916contents.txt"
 }

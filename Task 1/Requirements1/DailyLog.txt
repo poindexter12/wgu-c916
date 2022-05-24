@@ -40,3 +40,29 @@ debug.log
 *****************  END  *****************
 
 
+Log for 05/24/2022 09:18:34
+***************** START *****************
+
+    Directory: /Users/jseymour/School/wgu-C916/Task 1/Requirements1
+
+[32;1mUnixMode   User             Group                 LastWriteTime           Size Name[0m
+[32;1m--------   ----             -----                 -------------           ---- ----[0m
+-rw-r--r-- jseymour         staff               5/21/2022 21:14              0 debug.1.log
+-rw-r--r-- jseymour         staff               5/21/2022 21:14              0 debug.log
+
+*****************  END  *****************
+
+
+Log for 05/24/2022 09:18:53
+***************** START *****************
+
+    Directory: /Users/jseymour/School/wgu-C916/Task 1/Requirements1
+
+[32;1mUnixMode   User             Group                 LastWriteTime           Size Name[0m
+[32;1m--------   ----             -----                 -------------           ---- ----[0m
+-rw-r--r-- jseymour         staff               5/21/2022 21:14              0 debug.1.log
+-rw-r--r-- jseymour         staff               5/21/2022 21:14              0 debug.log
+
+*****************  END  *****************
+
+
