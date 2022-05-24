@@ -72,12 +72,9 @@ Function ListMemoryAndCpuUsage(){
 
 # Function to list all processes by virtual size
 Function ListProcessesByVirtualSize(){
-    Write-Host "Successfully listed processes by virtual size"
-    
-    $Processes = Get-Process
-    foreach ($ProcessItem in $Processes) {
-        Write-Host $ProcessItem
-    }
+    Get-Process | Sort-Object -Property VM | Out-GridView
+
+    WriteHostWithLines "Opened in GridView"
 }
 
 # Main function
@@ -121,4 +118,3 @@ Function Main () {
 
 # Call main
 Main 
- 
