@@ -1,4 +1,4 @@
- # Seymour, Joseph 004521088
+  # Seymour, Joseph 004521088
 # WGU C916
 
 # Script to automate the onboarding of new employees
@@ -60,13 +60,14 @@ Function ListMemoryAndCpuUsage(){
 
     $CpuUsage = (Get-WmiObject Win32_Processor | Measure-Object -property LoadPercentage -Average | Select Average ).Average
 
-    WriteHostWithLines "Current CPU usage: $CpuUsage%"
+    Write-Host "CPU usage: $CpuUsage%"
 
     $OperatingSystem = Get-WmiObject Win32_OperatingSystem
 
-    $MemoryUsage = (($OperatingSystem.TotalVisibleMemorySize - $OperatingSystem.FreePhysicalMemory)/1024/1024)
+    $MemoryUsage = [Math]::Round(($OperatingSystem.TotalVisibleMemorySize - $OperatingSystem.FreePhysicalMemory)/1024/1024, 2)
+    $MemoryPercentage = [Math]::Round($OperatingSystem.FreePhysicalMemory / $OperatingSystem.TotalVisibleMemorySize * 100)
 
-    WriteHostWithLines "Current memory usage: $MemoryUsage GB"
+    Write-Host "Memory usage: $MemoryUsage GB ($MemoryPercentage%)"
 }
 
 # Function to list all processes by virtual size
@@ -120,3 +121,4 @@ Function Main () {
 
 # Call main
 Main 
+ 
