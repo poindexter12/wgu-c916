@@ -74,7 +74,7 @@ Function ListMemoryAndCpuUsage(){
     #>
     
     # Get the cpu usage average
-    $CpuUsage = (Get-WmiObject Win32_Processor | Measure-Object -property LoadPercentage -Average | Select Average ).Average
+    $CpuUsage = (Get-WmiObject Win32_Processor | Measure-Object -property LoadPercentage -Average | Select-Content Average ).Average
 
     Write-Host "CPU usage: $CpuUsage%"
 
