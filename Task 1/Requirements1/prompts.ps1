@@ -1,4 +1,4 @@
-  # Seymour, Joseph 004521088
+﻿  # Seymour, Joseph 004521088
 # WGU C916
 
 <#
@@ -74,7 +74,7 @@ Function ListMemoryAndCpuUsage(){
     #>
     
     # Get the cpu usage average
-    $CpuUsage = (Get-WmiObject Win32_Processor | Measure-Object -property LoadPercentage -Average | Select-Content Average ).Average
+    $CpuUsage = (Get-WmiObject Win32_Processor | Measure-Object -property LoadPercentage -Average | Select-Object Average ).Average
 
     Write-Host "CPU usage: $CpuUsage%"
 
