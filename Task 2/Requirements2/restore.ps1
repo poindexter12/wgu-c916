@@ -23,12 +23,14 @@ Function Main(){
         Write-Host "OU $finance already exists"
     }
     else {
-        # Create an Active Directory organizational unit (OU) named “finance"
+        # Create an Active Directory organizational unit (OU) named finance"
         $organizationalUnit = New-ADOrganizationalUnit $ouName
     }
 
     # Get path for each user in the OU
     $ouPath = $organizationalUnit.DistinguishedName
+
+    Write-Host $ouPath
 
     # Import Users
     Import-Csv "financePersonnel.csv" -Delimiter "," | %{
@@ -40,27 +42,15 @@ Function Main(){
         $officePhone = $_.OfficePhone
         $mobilePhone = $_.MobilePhone
 
-        Write-Host $displayName
-
-        New-ADUser -Path $ouName -SamAccountName $samAccountName
+        New-ADUser -Path $ouPath -SamAccountName $samAccountName -GivenName $firstName -Surname $lastName -Name $displayName -DisplayName $displayName -PostalCode $postalCode -MobilePhone $mobilePhone -OfficePhone $officePhone
+        
+        Write-Host "Created account for $displayName"
     }
 
-    Exit 0
-
-    foreach ($financePerson in $financePersonnel) {
-        Write-Host "Making user for $financePerson.samAccount"
-        try {
-            New-ADUser -Path $ouPath -SamAccountName $financePerson.samAccount -GivenName $financePerson.First_Name -Surname $financePerson.Last_Name -Name "$financePerson.First_Name $financePerson.Last_Name" -DisplayName "$financePerson.First_Name $financePerson.Last_Name" -PostalCode $financePerson.PostalCode -OfficePhone $financePerson.OfficePhone -MobilePhone $financePerson.MobilePhone -Enable $True -City $financePerson.City
-
-            
-            Write-Host "The user account $financePerson.samAccount is created"
-        }
-        catch {
-            Write-Host "There was an error for user account $financePerson.samAccount" -ForegroundColor Red
-            Write-Host $_.Exception.Message
-        }
-    }
-
+    $srv = new-Object Microsoft.SqlServer.Management.Smo.Server("(local)")
+    $db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, "ClientDB")
+    $db.Create()
+    Write-Host $db.CreateDate
 }
 
 # Call Main
