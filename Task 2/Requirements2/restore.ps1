@@ -10,6 +10,32 @@
     the onboarding of new employees.
 #>
 
+Function CreateADUsers([String] $ouPath){
+    Write-Host
+    Write-Host "Create users from financePersonnel.csv"
+    Write-Host "********************** START **********************"
+    Write-Host
+
+    # Import Users
+    Import-Csv "financePersonnel.csv" -Delimiter "," | %{
+        $firstName = $_.First_Name
+        $lastName = $_.Last_Name
+        $samAccountName = $_.samAccount
+        $displayName = $firstName + " " + $lastName
+        $postalCode = $_.PostalCode
+        $officePhone = $_.OfficePhone
+        $mobilePhone = $_.MobilePhone
+
+        New-ADUser -Path $ouPath -SamAccountName $samAccountName -GivenName $firstName -Surname $lastName -Name $displayName -DisplayName $displayName -PostalCode $postalCode -MobilePhone $mobilePhone -OfficePhone $officePhone
+        
+        Write-Host "Created account for $displayName"
+    }
+
+    Write-Host
+    Write-Host "**********************  END  **********************"
+    Write-Host
+}
+
 Function Main(){
 
     # name of the OU
@@ -30,22 +56,7 @@ Function Main(){
     # Get path for each user in the OU
     $ouPath = $organizationalUnit.DistinguishedName
 
-    Write-Host $ouPath
-
-    # Import Users
-    Import-Csv "financePersonnel.csv" -Delimiter "," | %{
-        $firstName = $_.First_Name
-        $lastName = $_.Last_Name
-        $samAccountName = $_.samAccount
-        $displayName = $firstName + " " + $lastName
-        $postalCode = $_.PostalCode
-        $officePhone = $_.OfficePhone
-        $mobilePhone = $_.MobilePhone
-
-        New-ADUser -Path $ouPath -SamAccountName $samAccountName -GivenName $firstName -Surname $lastName -Name $displayName -DisplayName $displayName -PostalCode $postalCode -MobilePhone $mobilePhone -OfficePhone $officePhone
-        
-        Write-Host "Created account for $displayName"
-    }
+    #CreateADUsers($ouPath)
 
     $srv = new-Object Microsoft.SqlServer.Management.Smo.Server("(local)")
     $db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, "ClientDB")
