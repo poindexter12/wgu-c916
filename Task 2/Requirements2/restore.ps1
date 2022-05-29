@@ -58,7 +58,9 @@ Function Main(){
 
     #CreateADUsers($ouPath)
 
-    $srv = new-Object Microsoft.SqlServer.Management.Smo.Server("(local)")
+    [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO') | out-null
+
+    $srv = new-Object Microsoft.SqlServer.Management.Smo.Server("SRV19-PRIMARY\SQLEXPRESS")
     $db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, "ClientDB")
     $db.Create()
     Write-Host $db.CreateDate
