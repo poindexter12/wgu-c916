@@ -36,6 +36,28 @@ Function CreateADUsers([String] $ouPath){
     Write-Host
 }
 
+Function CreateDatabase(){
+    
+
+    $srv = New-Object Microsoft.SqlServer.Management.Smo.Server("SRV19-PRIMARY\SQLEXPRESS")
+    $db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, "ClientDB")
+    $db.Create()
+    Write-Host $db.CreateDate
+    
+}
+
+Function CreateSqlTable(){
+    # Load assembly for table objects
+    [reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.Types")
+
+
+
+}
+
+Function InsertTableData(){
+
+}
+
 Function Main(){
 
     # name of the OU
@@ -58,12 +80,14 @@ Function Main(){
 
     #CreateADUsers($ouPath)
 
+    # Load SMO assembly
     [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO') | out-null
 
-    $srv = new-Object Microsoft.SqlServer.Management.Smo.Server("SRV19-PRIMARY\SQLEXPRESS")
-    $db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, "ClientDB")
-    $db.Create()
-    Write-Host $db.CreateDate
+    CreateDatabase
+
+    CreateSqlTable
+
+    InsertTableData
 }
 
 # Call Main
