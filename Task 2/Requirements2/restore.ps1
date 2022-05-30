@@ -10,6 +10,9 @@
     the onboarding of new employees.
 #>
 
+# Load SMO assembly for MSSQL interactions
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')
+
 Function CreateADUsers([String] $ouPath){
     Write-Host
     Write-Host "Create users from financePersonnel.csv"
@@ -37,18 +40,19 @@ Function CreateADUsers([String] $ouPath){
 }
 
 Function CreateDatabase(){
-    
-
+    # connection to server
     $srv = New-Object Microsoft.SqlServer.Management.Smo.Server("SRV19-PRIMARY\SQLEXPRESS")
+    # make database object
     $db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, "ClientDB")
+    # create the database
     $db.Create()
+    # Write out the create date
     Write-Host $db.CreateDate
+    
     
 }
 
 Function CreateSqlTable(){
-    # Load assembly for table objects
-    [reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.Types")
 
 
 
@@ -81,7 +85,7 @@ Function Main(){
     #CreateADUsers($ouPath)
 
     # Load SMO assembly
-    [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO') | out-null
+    #[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO') | out-null
 
     CreateDatabase
 
