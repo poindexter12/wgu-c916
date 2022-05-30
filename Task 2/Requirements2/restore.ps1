@@ -40,6 +40,7 @@ Function CreateADUsers([String] $ouPath){
 }
 
 Function CreateDatabase(){
+
     # connection to server
     $srv = New-Object Microsoft.SqlServer.Management.Smo.Server("SRV19-PRIMARY\SQLEXPRESS")
     # make database object
@@ -57,11 +58,19 @@ Function CreateDatabase(){
     $nvarcharDataType = [Microsoft.SqlServer.Management.Smo.Datatype]::NVarChar(100)
 
     #Create the contact ID column
-    $contactIdColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "ContactId", $integerDataType)
-    $contactIdColumn.Identity = $true
-    $contactIdColumn.IdentitySeed = 1
-    $contactIdColumn.IdentityIncrement = 1
-    $contactTable.Columns.Add($contactIdColumn)
+    $contactIDColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "ContactID", $integerDataType)
+    $contactIDColumn.Identity = $true
+    $contactIDColumn.IdentitySeed = 1
+    $contactIDColumn.IdentityIncrement = 1
+    $contactTable.Columns.Add($contactIDColumn)
+
+    #Create the primary key with indexing
+    $contactPrimaryKey = New-Object Microsoft.SqlServer.Management.Smo.Index ($contactTable, "PK_Contacts")
+    $contactPrimaryKey.IndexKeyType = "DriPrimaryKey"
+    $contactPrimaryKey.IsClustered = $true
+    $contactIndexedColumn = New-Object Microsoft.SqlServer.Management.Smo.IndexedColumn ($contactPrimaryKey, "CompanyID")
+    $contactPrimaryKey.IndexedColumns.Add($contactIndexedColumn)
+    $contactTable.Indexes.Add($contactPrimaryKey)
 
     #Create the first_name column
     $firstNameColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "first_name", $nvarcharDataType)
@@ -90,16 +99,8 @@ Function CreateDatabase(){
     #Create the mobilePhone column
     $mobilePhoneColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "mobliePhone", $nvarcharDataType)
     $contactTable.Columns.Add($mobilePhoneColumn)
-}
 
-Function CreateSqlTable(){
-
-
-
-}
-
-Function InsertTableData(){
-
+    $contactTable.Create()
 }
 
 Function Main(){
@@ -129,9 +130,6 @@ Function Main(){
 
     CreateDatabase
 
-    CreateSqlTable
-
-    InsertTableData
 }
 
 # Call Main
