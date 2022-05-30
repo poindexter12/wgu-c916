@@ -49,7 +49,47 @@ Function CreateDatabase(){
     # Write out the create date
     Write-Host $db.CreateDate
     
-    
+    # create contacts table
+    $contactTable = New-Object Microsoft.SqlServer.Management.Smo.Table($db, "Client_A_Contacts")
+
+    #Create reusable datatype objects
+    $integerDataType = [Microsoft.SqlServer.Management.Smo.Datatype]::Int
+    $nvarcharDataType = [Microsoft.SqlServer.Management.Smo.Datatype]::NVarChar(100)
+
+    #Create the contact ID column
+    $contactIdColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "ContactId", $integerDataType)
+    $contactIdColumn.Identity = $true
+    $contactIdColumn.IdentitySeed = 1
+    $contactIdColumn.IdentityIncrement = 1
+    $contactTable.Columns.Add($contactIdColumn)
+
+    #Create the first_name column
+    $firstNameColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "first_name", $nvarcharDataType)
+    $contactTable.Columns.Add($firstNameColumn)
+
+    #Create the last_name column
+    $lastNameColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "last_name", $nvarcharDataType)
+    $contactTable.Columns.Add($lastNameColumn)
+
+    #Create the city column
+    $cityColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "city", $nvarcharDataType)
+    $contactTable.Columns.Add($cityColumn)
+
+    #Create the county column
+    $countyColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "county", $nvarcharDataType)
+    $contactTable.Columns.Add($countyColumn)
+
+    #Create the zip column
+    $zipColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "zip", $nvarcharDataType)
+    $contactTable.Columns.Add($zipColumn)
+
+    #Create the officePhone column
+    $officePhoneColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "officePhone", $nvarcharDataType)
+    $contactTable.Columns.Add($officePhoneColumn)
+
+    #Create the mobilePhone column
+    $mobilePhoneColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "mobliePhone", $nvarcharDataType)
+    $contactTable.Columns.Add($mobilePhoneColumn)
 }
 
 Function CreateSqlTable(){
