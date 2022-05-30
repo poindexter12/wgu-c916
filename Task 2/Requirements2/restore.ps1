@@ -53,18 +53,18 @@ Function CreateDatabase(){
     # create contacts table
     $contactTable = New-Object Microsoft.SqlServer.Management.Smo.Table($db, "Client_A_Contacts")
 
-    #Create reusable datatype objects
+    # create reusable datatype objects
     $integerDataType = [Microsoft.SqlServer.Management.Smo.Datatype]::Int
     $nvarcharDataType = [Microsoft.SqlServer.Management.Smo.Datatype]::NVarChar(100)
 
-    #Create the contact ID column
+    # create the contact ID column
     $contactIDColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "ContactID", $integerDataType)
     $contactIDColumn.Identity = $true
     $contactIDColumn.IdentitySeed = 1
     $contactIDColumn.IdentityIncrement = 1
     $contactTable.Columns.Add($contactIDColumn)
 
-    #Create the primary key with indexing
+    # create the primary key with indexing
     $contactPrimaryKey = New-Object Microsoft.SqlServer.Management.Smo.Index ($contactTable, "PK_Contacts")
     $contactPrimaryKey.IndexKeyType = "DriPrimaryKey"
     $contactPrimaryKey.IsClustered = $true
@@ -72,34 +72,35 @@ Function CreateDatabase(){
     $contactPrimaryKey.IndexedColumns.Add($contactIndexedColumn)
     $contactTable.Indexes.Add($contactPrimaryKey)
 
-    #Create the first_name column
+    # create the first_name column
     $firstNameColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "first_name", $nvarcharDataType)
     $contactTable.Columns.Add($firstNameColumn)
 
-    #Create the last_name column
+    # create the last_name column
     $lastNameColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "last_name", $nvarcharDataType)
     $contactTable.Columns.Add($lastNameColumn)
 
-    #Create the city column
+    # create the city column
     $cityColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "city", $nvarcharDataType)
     $contactTable.Columns.Add($cityColumn)
 
-    #Create the county column
+    # create the county column
     $countyColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "county", $nvarcharDataType)
     $contactTable.Columns.Add($countyColumn)
 
-    #Create the zip column
+    # create the zip column
     $zipColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "zip", $nvarcharDataType)
     $contactTable.Columns.Add($zipColumn)
 
-    #Create the officePhone column
+    # create the officePhone column
     $officePhoneColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "officePhone", $nvarcharDataType)
     $contactTable.Columns.Add($officePhoneColumn)
 
-    #Create the mobilePhone column
+    # create the mobilePhone column
     $mobilePhoneColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "mobliePhone", $nvarcharDataType)
     $contactTable.Columns.Add($mobilePhoneColumn)
 
+    # create the table
     $contactTable.Create()
 }
 
