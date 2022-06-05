@@ -41,10 +41,13 @@ Function CreateADUsers([String] $ouPath){
 
 Function CreateDatabase(){
 
+    # variables
+    $serverName = "SRV19-PRIMARY\SQLEXPRESS"
+    $databaseName = "ClientDB"
     # connection to server
-    $srv = New-Object Microsoft.SqlServer.Management.Smo.Server("SRV19-PRIMARY\SQLEXPRESS")
+    $srv = New-Object Microsoft.SqlServer.Management.Smo.Server($serverName)
     # make database object
-    $db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, "ClientDB")
+    $db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, $databaseName)
     # create the database
     $db.Create()
     # Write out the create date
@@ -102,6 +105,17 @@ Function CreateDatabase(){
 
     # create the table
     $contactTable.Create()
+
+    # import sql module
+    Install-Module SqlServer
+
+    # create insert parameters
+    $csvPath = "NewClientData.csv"
+    $csvDelimiter = ","
+    $tableSchema = "dbo"
+
+    # insert data with import csv
+    Import-Csv -Path $csvPath -Delimiter $csvDelimiter | Write-SqlTableData -ServerInstance $serverName -DatabaseName $databaseName -SchemaName $tableSchema -TableName $contactTable -Force
 }
 
 Function Main(){
