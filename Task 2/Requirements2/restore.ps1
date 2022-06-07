@@ -48,10 +48,12 @@ Function CreateDatabase(){
     $srv = New-Object Microsoft.SqlServer.Management.Smo.Server($serverName)
     # make database object
     $db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, $databaseName)
+    # drop the database if it exists
+    $db.DropIfExists()
     # create the database
     $db.Create()
     # Write out the create date
-    Write-Host $db.CreateDate
+    Write-Host "Database created"
     
     # create contacts table
     $contactTable = New-Object Microsoft.SqlServer.Management.Smo.Table($db, "Client_A_Contacts")
@@ -71,10 +73,10 @@ Function CreateDatabase(){
     $contactPrimaryKey = New-Object Microsoft.SqlServer.Management.Smo.Index ($contactTable, "PK_Contacts")
     $contactPrimaryKey.IndexKeyType = "DriPrimaryKey"
     $contactPrimaryKey.IsClustered = $true
-    $contactIndexedColumn = New-Object Microsoft.SqlServer.Management.Smo.IndexedColumn ($contactPrimaryKey, "CompanyID")
+    $contactIndexedColumn = New-Object Microsoft.SqlServer.Management.Smo.IndexedColumn ($contactPrimaryKey, "ContactID")
     $contactPrimaryKey.IndexedColumns.Add($contactIndexedColumn)
-    $contactTable.Indexes.Add($contactPrimaryKey)
-
+    $contactTable.Indexes.Add($contactPrimaryKey) 
+    
     # create the first_name column
     $firstNameColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "first_name", $nvarcharDataType)
     $contactTable.Columns.Add($firstNameColumn)
@@ -102,9 +104,16 @@ Function CreateDatabase(){
     # create the mobilePhone column
     $mobilePhoneColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "mobliePhone", $nvarcharDataType)
     $contactTable.Columns.Add($mobilePhoneColumn)
-
-    # create the table
-    $contactTable.Create()
+ 
+    try{
+        # create the table
+        $contactTable.Create()
+    }
+    catch {
+        Write-Host $Error[0].Exception
+        Write-Host "Unhandled exception occurred, exiting..."
+        Exit 1
+    }
 
     # import sql module
     Install-Module SqlServer
