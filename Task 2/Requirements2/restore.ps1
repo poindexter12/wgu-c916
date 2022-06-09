@@ -130,10 +130,7 @@ Function Main(){
     # Get path for each user in the OU
     $ouPath = $organizationalUnit.DistinguishedName
 
-    #CreateADUsers($ouPath)
-
-    # Load SMO assembly
-    #[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO') | out-null
+    CreateADUsers($ouPath)
 
     CreateDatabase
 
