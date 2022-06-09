@@ -213,6 +213,11 @@ Function Main(){
         # call to restore clients
         RestoreClients
     }
+    catch [System.OutOfMemoryException] {
+        Write-Error $_
+        Write-Host "An out of memory exception ocurred, exiting..."
+        Exit 2
+    }
     catch{
         Write-Debug $Error[0].Exception
         Write-Host "Unhandled exception executing main, exiting..."
