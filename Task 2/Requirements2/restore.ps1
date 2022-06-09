@@ -14,7 +14,7 @@
 [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')
 
 Function CreateADUsers([String] $ouPath){
-        <#
+    <#
         .SYNOPSIS
         Create AD user
         
@@ -47,8 +47,8 @@ Function CreateADUsers([String] $ouPath){
     }
     catch {
         Write-Debug $Error[0].Exception
-        Write-Host "Unhandled exception creating users, exiting..."
-        Exit 1
+        Write-Host "Unhandled exception creating users"
+        throw
     }
 
     Write-Host
@@ -56,7 +56,14 @@ Function CreateADUsers([String] $ouPath){
     Write-Host
 }
 
-Function CreateDatabase(){
+Function RestoreClients(){
+    <#
+        .SYNOPSIS
+        Retores clients to database
+        
+        .DESCRIPTION
+        Reads clients from NewClientData.csv and inserts them as records into Client_A_Contacts
+    #>
 
     Write-Host
     Write-Host "Create ClientDB database"
@@ -79,8 +86,8 @@ Function CreateDatabase(){
     }
     catch {
         Write-Debug $Error[0].Exception
-        Write-Host "Unhandled exception creating database, exiting..."
-        Exit 1
+        Write-Host "Unhandled exception creating database"
+        throw
     }
 
     Write-Host "Database created"
@@ -136,8 +143,8 @@ Function CreateDatabase(){
     }
     catch {
         Write-Debug $Error[0].Exception
-        Write-Host "Unhandled exception creating table, exiting..."
-        Exit 1
+        Write-Host "Unhandled exception creating table"
+        throw
     }
 
     Write-Host "Table created"
@@ -161,8 +168,8 @@ Function CreateDatabase(){
     }
     catch {
         Write-Debug $Error[0].Exception
-        Write-Host "Unhandled exception inserting records, exiting..."
-        Exit 1
+        Write-Host "Unhandled exception inserting records"
+        throw
     }
 
     Write-Host "Records inserted"
@@ -172,7 +179,13 @@ Function CreateDatabase(){
 }
 
 Function Main(){
-
+    <#
+        .SYNOPSIS
+        Main function to execute restoring state
+        
+        .DESCRIPTION
+        Restores users to AD and restores clients to the local MSSQL database
+    #>
     # name of the OU
     $ouName = "finance"
     
@@ -191,9 +204,18 @@ Function Main(){
     # Get path for each user in the OU
     $ouPath = $organizationalUnit.DistinguishedName
 
-    CreateADUsers($ouPath)
+    try{
+        # call to create the AD users
+        CreateADUsers($ouPath)
 
-    CreateDatabase
+        # call to restore clients
+        RestoreClients
+    }
+    catch{
+        Write-Debug $Error[0].Exception
+        Write-Host "Unhandled exception executing main, exiting..."
+        Exit 1
+    }
 
 }
 
