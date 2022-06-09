@@ -3,35 +3,52 @@
 
 <#
     .SYNOPSIS
-    Script to automate the onboarding of new employees
+    Script to automate the restoration of AD users and the contacts table in MSSQL
 
     .DESCRIPTION
-    Running this script will give you the option of running various automated tasks for supporting
-    the onboarding of new employees.
+    Running this will immediately execute restoration of AD users from the financePersonnel.csv 
+    and insert users from the NewClientData.csv into MSSQL on the local machine
 #>
 
 # Load SMO assembly for MSSQL interactions
 [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')
 
 Function CreateADUsers([String] $ouPath){
+        <#
+        .SYNOPSIS
+        Create AD user
+        
+        .DESCRIPTION
+        Reads users from financePersonnel.csv and create them in AD
+
+        .PARAMETER ouPath
+        Organizational Unit to place users into in AD
+    #>
     Write-Host
     Write-Host "Create users from financePersonnel.csv"
     Write-Host "********************** START **********************"
     Write-Host
 
-    # Import Users
-    Import-Csv "financePersonnel.csv" -Delimiter "," | %{
-        $firstName = $_.First_Name
-        $lastName = $_.Last_Name
-        $samAccountName = $_.samAccount
-        $displayName = $firstName + " " + $lastName
-        $postalCode = $_.PostalCode
-        $officePhone = $_.OfficePhone
-        $mobilePhone = $_.MobilePhone
+    try{
+        # Import Users
+        Import-Csv "financePersonnel.csv" -Delimiter "," | %{
+            $firstName = $_.First_Name
+            $lastName = $_.Last_Name
+            $samAccountName = $_.samAccount
+            $displayName = $firstName + " " + $lastName
+            $postalCode = $_.PostalCode
+            $officePhone = $_.OfficePhone
+            $mobilePhone = $_.MobilePhone
 
-        New-ADUser -Path $ouPath -SamAccountName $samAccountName -GivenName $firstName -Surname $lastName -Name $displayName -DisplayName $displayName -PostalCode $postalCode -MobilePhone $mobilePhone -OfficePhone $officePhone
-        
-        Write-Host "Created account for $displayName"
+            New-ADUser -Path $ouPath -SamAccountName $samAccountName -GivenName $firstName -Surname $lastName -Name $displayName -DisplayName $displayName -PostalCode $postalCode -MobilePhone $mobilePhone -OfficePhone $officePhone
+            
+            Write-Host "Created account for $displayName"
+        }
+    }
+    catch {
+        Write-Debug $Error[0].Exception
+        Write-Host "Unhandled exception creating users, exiting..."
+        Exit 1
     }
 
     Write-Host
@@ -41,6 +58,11 @@ Function CreateADUsers([String] $ouPath){
 
 Function CreateDatabase(){
 
+    Write-Host
+    Write-Host "Create ClientDB database"
+    Write-Host "********************** START **********************"
+    Write-Host
+
     # variables
     $serverName = "SRV19-PRIMARY\SQLEXPRESS"
     $databaseName = "ClientDB"
@@ -48,13 +70,30 @@ Function CreateDatabase(){
     $srv = New-Object Microsoft.SqlServer.Management.Smo.Server($serverName)
     # make database object
     $db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, $databaseName)
-    # drop the database if it exists
-    $db.DropIfExists()
-    # create the database
-    $db.Create()
-    # Write out the create date
+
+    try{
+        # drop the database if it exists
+        $db.DropIfExists()
+        # create the database
+        $db.Create()
+    }
+    catch {
+        Write-Debug $Error[0].Exception
+        Write-Host "Unhandled exception creating database, exiting..."
+        Exit 1
+    }
+
     Write-Host "Database created"
+    Write-Host
+    Write-Host "**********************  END  **********************"
+    Write-Host
     
+    
+    Write-Host
+    Write-Host "Create Client_A_Contacts table"
+    Write-Host "********************** START **********************"
+    Write-Host
+
     # table name
     $contactTableName = "Client_A_Contacts"
     # create contacts table
@@ -96,18 +135,40 @@ Function CreateDatabase(){
         $contactTable.Create()
     }
     catch {
-        Write-Host $Error[0].Exception
-        Write-Host "Unhandled exception occurred, exiting..."
+        Write-Debug $Error[0].Exception
+        Write-Host "Unhandled exception creating table, exiting..."
         Exit 1
     }
+
+    Write-Host "Table created"
+    Write-Host
+    Write-Host "**********************  END  **********************"
+    Write-Host
+    
+    Write-Host
+    Write-Host "Inserting records into table"
+    Write-Host "********************** START **********************"
+    Write-Host
 
     # create insert parameters
     $csvPath = "NewClientData.csv"
     $csvDelimiter = ","
     $tableSchema = "dbo"
 
-    # insert data with import csv
-    Import-Csv -Path $csvPath -Delimiter $csvDelimiter | Write-SqlTableData -ServerInstance $serverName -DatabaseName $databaseName -SchemaName $tableSchema -TableName $contactTableName
+    try{
+        # insert data with import csv
+        Import-Csv -Path $csvPath -Delimiter $csvDelimiter | Write-SqlTableData -ServerInstance $serverName -DatabaseName $databaseName -SchemaName $tableSchema -TableName $contactTableName
+    }
+    catch {
+        Write-Debug $Error[0].Exception
+        Write-Host "Unhandled exception inserting records, exiting..."
+        Exit 1
+    }
+
+    Write-Host "Records inserted"
+    Write-Host
+    Write-Host "**********************  END  **********************"
+    Write-Host
 }
 
 Function Main(){
