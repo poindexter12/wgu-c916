@@ -55,27 +55,13 @@ Function CreateDatabase(){
     # Write out the create date
     Write-Host "Database created"
     
+    # table name
+    $contactTableName = "Client_A_Contacts"
     # create contacts table
-    $contactTable = New-Object Microsoft.SqlServer.Management.Smo.Table($db, "Client_A_Contacts")
+    $contactTable = New-Object Microsoft.SqlServer.Management.Smo.Table($db, $contactTableName)
 
     # create reusable datatype objects
-    $integerDataType = [Microsoft.SqlServer.Management.Smo.Datatype]::Int
     $nvarcharDataType = [Microsoft.SqlServer.Management.Smo.Datatype]::NVarChar(100)
-
-    # create the contact ID column
-    $contactIDColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "ContactID", $integerDataType)
-    $contactIDColumn.Identity = $true
-    $contactIDColumn.IdentitySeed = 1
-    $contactIDColumn.IdentityIncrement = 1
-    $contactTable.Columns.Add($contactIDColumn)
-
-    # create the primary key with indexing
-    $contactPrimaryKey = New-Object Microsoft.SqlServer.Management.Smo.Index ($contactTable, "PK_Contacts")
-    $contactPrimaryKey.IndexKeyType = "DriPrimaryKey"
-    $contactPrimaryKey.IsClustered = $true
-    $contactIndexedColumn = New-Object Microsoft.SqlServer.Management.Smo.IndexedColumn ($contactPrimaryKey, "ContactID")
-    $contactPrimaryKey.IndexedColumns.Add($contactIndexedColumn)
-    $contactTable.Indexes.Add($contactPrimaryKey) 
     
     # create the first_name column
     $firstNameColumn = New-Object Microsoft.SqlServer.Management.Smo.Column ($contactTable, "first_name", $nvarcharDataType)
@@ -115,16 +101,13 @@ Function CreateDatabase(){
         Exit 1
     }
 
-    # import sql module
-    Install-Module SqlServer
-
     # create insert parameters
     $csvPath = "NewClientData.csv"
     $csvDelimiter = ","
     $tableSchema = "dbo"
 
     # insert data with import csv
-    Import-Csv -Path $csvPath -Delimiter $csvDelimiter | Write-SqlTableData -ServerInstance $serverName -DatabaseName $databaseName -SchemaName $tableSchema -TableName $contactTable -Force
+    Import-Csv -Path $csvPath -Delimiter $csvDelimiter | Write-SqlTableData -ServerInstance $serverName -DatabaseName $databaseName -SchemaName $tableSchema -TableName $contactTableName
 }
 
 Function Main(){
