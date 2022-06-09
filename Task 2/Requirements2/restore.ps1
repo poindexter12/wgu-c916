@@ -30,6 +30,7 @@ Function CreateADUsers([String] $ouPath){
     Write-Host
 
     try{
+        Write-Host "OU Path is: $($ouPath)"
         # Import Users
         Import-Csv "financePersonnel.csv" -Delimiter "," | %{
             $firstName = $_.First_Name
@@ -46,7 +47,7 @@ Function CreateADUsers([String] $ouPath){
         }
     }
     catch {
-        Write-Debug $Error[0].Exception
+        Write-Host $Error[0].Exception
         Write-Host "Unhandled exception creating users"
         throw
     }
@@ -192,19 +193,20 @@ Function Main(){
     # Try to get the OU
     $organizationalUnit = Get-ADOrganizationalUnit -Filter "ou -eq '$ouName'"
 
-    # Check to see if OU already exists
-    if ($organizationalUnit) {
-        Write-Host "OU $finance already exists"
-    }
-    else {
-        # Create an Active Directory organizational unit (OU) named finance"
-        $organizationalUnit = New-ADOrganizationalUnit $ouName
-    }
-
-    # Get path for each user in the OU
-    $ouPath = $organizationalUnit.DistinguishedName
-
     try{
+        # Check to see if OU already exists
+        if ($organizationalUnit) {
+            Write-Host "OU $($ouName) already exists"
+        }
+        else {
+            # Create an Active Directory organizational unit (OU) named finance"
+            New-ADOrganizationalUnit $ouName
+            $organizationalUnit = Get-ADOrganizationalUnit -Filter "ou -eq '$ouName'"
+        }
+
+        # Get path for each user in the OU
+        $ouPath = $organizationalUnit.DistinguishedName
+
         # call to create the AD users
         CreateADUsers($ouPath)
 
